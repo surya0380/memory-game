@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 const MemoryGame = () => {
     const [gridSize, setGridSize] = useState(4)
@@ -12,11 +12,15 @@ const MemoryGame = () => {
 
 
     const handleGridSizeChange = (e) => {
-        const size = parseInt(e.target.value);
-        if (size >= 2 && size <= 10) setGridSize(size);
+        const value = e.target.value;
+        const size = parseInt(value);
+
+        if (value === '' || (size >= 2 && size <= 10)) {
+            setGridSize(value === '' ? '' : size);
+        }
     }
 
-    const createGame = () => {
+    const createGame = useCallback(() => {
         const totalCards = gridSize * gridSize; // 16
         const pairCount = Math.floor(totalCards / 2); // 8
         const numbers = [...Array(pairCount).keys()].map(n => n + 1);
@@ -29,7 +33,7 @@ const MemoryGame = () => {
         setFlipped([]);
         setSolved([]);
         setWon(false);
-    }
+    }, [gridSize])
 
     const handleClickCard = (id) => {
         if (disabled || won) return;
@@ -70,6 +74,7 @@ const MemoryGame = () => {
 
     useEffect(() => {
         createGame();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gridSize])
 
     useEffect(() => {
